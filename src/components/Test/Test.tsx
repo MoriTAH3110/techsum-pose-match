@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react"
-import { PoseData } from "../../types/BodyPose.types";
+import { Connection, PoseData } from "../../types/BodyPose.types";
+import { CanvasView } from "./Test.styled";
 
 async function startStream(video: HTMLVideoElement) {
     const stream = await window.navigator.mediaDevices.getUserMedia({ video: true });
@@ -7,7 +8,9 @@ async function startStream(video: HTMLVideoElement) {
     await video.play();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let bodyPose: any;
+let connections: Connection[] = [];
 
 export const Test = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -16,21 +19,21 @@ export const Test = () => {
     const poses = useRef<PoseData[]>([])
 
     const onPoses = (results: PoseData[]) => {
-        console.log("Poses biatch", results);
         poses.current = results;
     }
 
     useEffect(() => {
         // @ts-ignore
         ml5.bodyPose(
-            "MoveNet", undefined,
+            "MoveNet", {
+            model: "SINGLEPOSE_LIGHTING",
+        },
             // @ts-ignore
             instance => {
-                console.log("ml5 ready");
                 bodyPose = instance
             }
         );
-        if( videoRef.current ){
+        if (videoRef.current) {
             startStream(videoRef.current);
         }
     }, [])
@@ -38,17 +41,20 @@ export const Test = () => {
     useEffect(() => {
         let ref: number;
         const loop = () => {
-            if( videoRef.current && canvasRef.current ){
+            if (videoRef.current && canvasRef.current) {
                 const ctx = canvasRef.current.getContext("2d");
-                if( !ctx ){
+                if (!ctx) {
                     return
                 }
-                ctx.clearRect(0,0,640,480)
+                ctx.clearRect(0, 0, 640, 480)
                 ctx.drawImage(videoRef.current, 0, 0);
 
                 bodyPose?.detect(canvasRef.current, onPoses);
+                if (bodyPose) {
+                    connections = bodyPose?.getSkeleton();
+                }
 
-                if( poses.current.length > 0 ){
+                if (poses.current.length > 0) {
                     const colors = [
                         "red",
                         "green",
@@ -56,12 +62,9 @@ export const Test = () => {
                         "purple",
                         "cyan"
                     ]
-                    poses.current.forEach(({ keypoints }, index) => {
-                        keypoints.forEach(({ x, y }) => {
-                            ctx.fillStyle = colors[index % colors.length];
-                            ctx.fillRect(x,y,10,10);
-                        })
-                    })
+
+                    drawKeyPoints(poses.current, ctx, colors);
+                    drawSkeleton(poses.current, connections, ctx, colors);
                 }
             }
 
@@ -71,15 +74,48 @@ export const Test = () => {
         requestAnimationFrame(loop);
 
         return () => {
-            if( ref ){
+            if (ref) {
                 cancelAnimationFrame(ref);
             }
         }
     }, [])
 
+    //Aux functions
+    const drawKeyPoints = (poses: PoseData[], ctx: CanvasRenderingContext2D, colors: string[]) => {
+        poses.forEach(({ keypoints }, index) => {
+            keypoints.forEach(({ x, y, confidence }) => {
+                if (confidence < 0.1) {
+                    return;
+                }
+                ctx.fillStyle = colors[index % colors.length];
+                ctx.fillRect(x, y, 10, 10);
+            })
+        })
+    };
+
+    const drawSkeleton = (poses: PoseData[], connections: Connection[], ctx: CanvasRenderingContext2D, colors: string[]) => { 
+        poses.forEach((pose, poseIndex) => {
+            connections.forEach((connection) => {
+                const pointAIndex = connection[0];
+                const pointBIndex = connection[1];
+
+                const pointA = pose.keypoints[pointAIndex];
+                const pointB = pose.keypoints[pointBIndex];
+
+                if (pointA.confidence > 0.1 && pointB.confidence > 0.1) {
+                    ctx.beginPath();
+                    ctx.moveTo(pointA.x, pointA.y);
+                    ctx.lineTo(pointB.x, pointB.y);
+                    ctx.strokeStyle = colors[poseIndex % colors.length];
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+            })
+        });
+    };
+
     return <>
-        <video hidden ref={videoRef}/>
-        <canvas ref={canvasRef} width={640} height={480}/>
-        <button onClick={() => {}}>Frame</button>
+        <video hidden ref={videoRef} />
+        <CanvasView ref={canvasRef} width={640} height={480} />
     </>
 }
