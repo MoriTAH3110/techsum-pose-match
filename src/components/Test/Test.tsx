@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Connection, PoseData } from "../../types/BodyPose.types";
 import { CanvasView } from "./Test.styled";
 
@@ -10,16 +10,46 @@ async function startStream(video: HTMLVideoElement) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let bodyPose: any;
+
 let connections: Connection[] = [];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let brain: any;
 
 export const Test = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const poses = useRef<PoseData[]>([]);
+    const appState = useRef<string>("idle");
+    const currentPoseName = useRef<string | undefined>(undefined);
 
-    const poses = useRef<PoseData[]>([])
+    const brainOptions = {
+        inputs: 34, // 17 keypoints with x and y coordinates
+        outputs: 2, // number of poses to recognize
+        task: "classification",
+        debug: true,
+    };
 
     const onPoses = (results: PoseData[]) => {
         poses.current = results;
+
+        if (appState.current === "training") {
+            const inputs: number[] = [];
+
+            results.forEach(({ keypoints }) => {
+                keypoints.forEach(({ x, y }) => {
+                    inputs.push(x);
+                    inputs.push(y);
+                });
+            })
+
+            const poseName: string = currentPoseName === undefined ? "" : currentPoseName;
+
+            console.log("Adding example for pose: ", currentPoseName);
+            console.log("Inputs: ", inputs);
+
+            brain.addData(inputs, poseName);
+        };
     }
 
     useEffect(() => {
@@ -36,6 +66,9 @@ export const Test = () => {
         if (videoRef.current) {
             startStream(videoRef.current);
         }
+
+        brain = ml5.neuralNetwork(brainOptions);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -93,7 +126,7 @@ export const Test = () => {
         })
     };
 
-    const drawSkeleton = (poses: PoseData[], connections: Connection[], ctx: CanvasRenderingContext2D, colors: string[]) => { 
+    const drawSkeleton = (poses: PoseData[], connections: Connection[], ctx: CanvasRenderingContext2D, colors: string[]) => {
         poses.forEach((pose, poseIndex) => {
             connections.forEach((connection) => {
                 const pointAIndex = connection[0];
@@ -114,8 +147,49 @@ export const Test = () => {
         });
     };
 
-    return <>
-        <video hidden ref={videoRef} />
-        <CanvasView ref={canvasRef} width={640} height={480} />
-    </>
+    //Train model functions
+    const delay = (msToWait: number, action: () => void) =>
+        new Promise(resolve => setTimeout(() => resolve(action()), msToWait));
+
+    const handleOnTrain = async () => {
+        await delay(1000, () => console.log("countdown!"))
+
+        await delay(3000, () => {
+            console.log("start training");
+
+            appState.current = "training";
+        });
+
+        await delay(5000, () => appState.current = "idle");
+    };
+
+    const handleInputPoseName = (e: React.ChangeEvent<HTMLInputElement>) => {
+        currentPoseName.current = e.target.value;
+    }
+
+    const handleOnSaveData = () => {
+        brain.saveData(currentPoseName, () => console.log("Data saved!"));
+    };
+
+    return (
+        <>
+            <div>
+                <video hidden ref={videoRef} />
+                <CanvasView ref={canvasRef} width={640} height={480} />
+            </div>
+
+            <div>
+                <input type="text" placeholder="Pose Name" onChange={handleInputPoseName} />
+
+                <button
+                    onClick={handleOnTrain}
+                    disabled={currentPoseName?.length === 0 || currentPoseName === undefined}
+                >
+                    Get training data
+                </button>
+
+                <button onClick={handleOnSaveData}>Save Data</button>
+            </div>
+        </>
+    );
 }
