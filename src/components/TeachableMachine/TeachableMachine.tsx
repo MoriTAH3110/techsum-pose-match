@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react"
-import { Connection, PoseData } from "../../types/BodyPose.types";
-import { CanvasView } from "./Test.styled";
+import { useRef, useEffect } from "react";
+import { PoseData, Connection } from "../../types/BodyPose.types";
+import { CanvasView } from "../Test/Test.styled";
 
 async function startStream(video: HTMLVideoElement) {
     const stream = await window.navigator.mediaDevices.getUserMedia({ video: true });
@@ -11,45 +11,41 @@ async function startStream(video: HTMLVideoElement) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let bodyPose: any;
 
-let connections: Connection[] = [];
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let brain: any;
 
-export const Test = () => {
+let connections: Connection[] = [];
+
+const tmModelUrl = "https://teachablemachine.withgoogle.com/models/Uk5ERsu-9/";
+
+const brainOptions = {
+    layers: [
+        ml5.tf.layers.dense({
+            units: 16,
+            inputShape: [1],
+            activation: 'relu',
+        }),
+        ml5.tf.layers.dense({
+            units: 16,
+            activation: 'sigmoid',
+        }),
+        ml5.tf.layers.dense({
+            units: 1,
+            activation: 'sigmoid',
+        })
+    ],
+    task: "classification",
+    debug: true,
+};
+
+const TeachableMachine = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const poses = useRef<PoseData[]>([]);
-    const appState = useRef<string>("idle");
-    const currentPoseName = useRef<string | undefined>(undefined);
-
-    const brainOptions = {
-        inputs: 34, // 17 keypoints with x and y coordinates
-        outputs: 2, // number of poses to recognize
-        task: "classification",
-        debug: true,
-    };
+    //const currentPoseName = useRef<string | undefined>(undefined);
 
     const onPoses = (results: PoseData[]) => {
         poses.current = results;
-
-        if (appState.current === "training") {
-            const inputs: number[] = [];
-
-            results.forEach(({ keypoints }) => {
-                keypoints.forEach(({ x, y }) => {
-                    inputs.push(x);
-                    inputs.push(y);
-                });
-            })
-
-            const poseName: string = currentPoseName === undefined ? "" : currentPoseName;
-
-            console.log("Adding example for pose: ", currentPoseName);
-            console.log("Inputs: ", inputs);
-
-            brain.addData(inputs, poseName);
-        };
     }
 
     useEffect(() => {
@@ -63,12 +59,21 @@ export const Test = () => {
                 bodyPose = instance
             }
         );
+
         if (videoRef.current) {
             startStream(videoRef.current);
         }
 
+        //Classification
+        const modelInfo = {
+            model: tmModelUrl + "model.json",
+            metadata: tmModelUrl + "metadata.json",
+            weights: tmModelUrl + "model.weights.bin",
+        };
+
         brain = ml5.neuralNetwork(brainOptions);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+
+        brain.load(modelInfo, onLoadModel);
     }, [])
 
     useEffect(() => {
@@ -83,8 +88,9 @@ export const Test = () => {
                 ctx.drawImage(videoRef.current, 0, 0);
 
                 bodyPose?.detect(canvasRef.current, onPoses);
+
                 if (bodyPose) {
-                    connections = bodyPose?.getSkeleton();
+                    connections = bodyPose.getSkeleton();
                 }
 
                 if (poses.current.length > 0) {
@@ -148,27 +154,19 @@ export const Test = () => {
     };
 
     //Train model functions
-    const delay = (msToWait: number, action: () => void) =>
-        new Promise(resolve => setTimeout(() => resolve(action()), msToWait));
-
-    const handleOnTrain = async () => {
-        await delay(1000, () => console.log("countdown!"))
-
-        await delay(3000, () => {
-            console.log("start training");
-
-            appState.current = "training";
-        });
-
-        await delay(5000, () => appState.current = "idle");
+    const onLoadModel = () => {
+        console.log("Model loaded");
     };
 
-    const handleInputPoseName = (e: React.ChangeEvent<HTMLInputElement>) => {
-        currentPoseName.current = e.target.value;
-    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onHandleResult = (results: any, error: any) => {
+        if (error) {
+            console.error(error);
+            return;
+        }
+        const label = results[0].label;
 
-    const handleOnSaveData = () => {
-        brain.saveData(currentPoseName, () => console.log("Data saved!"));
+        console.log('🚀 ~ onHandleResult ~ label:', label);
     };
 
     return (
@@ -179,17 +177,10 @@ export const Test = () => {
             </div>
 
             <div>
-                <input type="text" placeholder="Pose Name" onChange={handleInputPoseName} />
 
-                <button
-                    onClick={handleOnTrain}
-                    // disabled={currentPoseName.current?.length === 0 || currentPoseName.current === undefined}
-                >
-                    Get training data
-                </button>
-
-                <button onClick={handleOnSaveData}>Save Data</button>
             </div>
         </>
     );
-}
+};
+
+export default TeachableMachine;
