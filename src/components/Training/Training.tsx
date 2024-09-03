@@ -19,12 +19,12 @@ export const Training = () => {
     // callbacks
     const dataLoaded = () => {
         brain.normalizeData();
-        brain.train({ epochs: 50 }, trainingFinished);
+        brain.train(trainingFinished);
     };
 
     const trainingFinished = () => {
         console.log('model trained');
-        brain.save();
+        // brain.save();
     };
 
     //aux func
@@ -36,10 +36,8 @@ export const Training = () => {
     };
 
     const handleOnLoadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            brain.loadData(file, dataLoaded);
-        }
+        const fileList = event.target.files;
+        brain.loadData(fileList, dataLoaded);
     };
 
     return (
