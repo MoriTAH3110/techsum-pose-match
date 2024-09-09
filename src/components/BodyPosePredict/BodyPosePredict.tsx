@@ -4,8 +4,8 @@ import { useRef, useState } from "react";
 import { Pose } from "../../types/TensorFlow.types";
 
 const webcamSpecs = {
-    width: 640,
-    height: 480,
+    width: 480,
+    height: 640,
     flipped: true
 };
 
@@ -35,6 +35,8 @@ const BodyPosePredict: React.FC = () => {
         await webcam.setup();
         await webcam.play();
         webcamRef.current = webcam;
+
+        console.log('🚀 ~ init ~ webcamRef.current:', webcamRef.current);
         window.requestAnimationFrame(loop);
 
         const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -80,7 +82,7 @@ const BodyPosePredict: React.FC = () => {
             ctx.drawImage(webcamRef.current.canvas, 0, 0);
 
             if (pose) {
-                const minPartConfidence = 0.5;
+                const minPartConfidence = 0.75;
                 tmPose.drawKeypoints(pose.keypoints, minPartConfidence, ctx);
                 tmPose.drawSkeleton(pose.keypoints, minPartConfidence, ctx);
             }
