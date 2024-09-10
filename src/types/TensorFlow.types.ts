@@ -54,3 +54,8 @@ export declare type InputResolution = number | {
     width: number;
     height: number;
 };
+
+export declare type PlayerPose = {
+    className: string;
+    probability: number;
+};

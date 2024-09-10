@@ -2,7 +2,7 @@ import * as tf from "@tensorflow/tfjs";
 import * as tmPose from "@teachablemachine/pose";
 
 import { useEffect, useRef, useState } from "react";
-import { Pose } from "../../types/TensorFlow.types";
+import { PlayerPose, Pose } from "../../types/TensorFlow.types";
 import { MillisecondsEncoder } from "../../utils/format.utils";
 
 const WEBCAM_SPECS = {
@@ -15,23 +15,42 @@ const MainGame = () => {
     //URL for the trained model
     const URL = "https://teachablemachine.withgoogle.com/models/ybrnIyoF9/"
 
-    //Refs
+    //GAMEPLAY
+    let frameSkipCounter = 0;
+    const GAME_TIME = 1 * 60 * 1000; //3 minutes
+    const POSE_CHANGE_TIME = 15 * 1000; //15 seconds
+
+    //REFS - To use value inside async functions
     const webcamRef = useRef<tmPose.Webcam | null>(null);
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
     const modelRef = useRef<tmPose.CustomPoseNet | null>(null);
-    const maxPredictions = useRef(0);
+    const posesBankRef = useRef<string[]>([]);
+    const incomingPosesRef = useRef<string[]>([]);
+    const poseToMatchRef = useRef<string>('');
+    const playerPoseRef = useRef<PlayerPose>({
+        className: 'null',
+        probability: 0
+    });
+    const playerPredictionsRef = useRef<PlayerPose[]>([]);
 
-    //state
-    const [currentPose, setCurrentPose] = useState<string | null>(null);
-
-    //GAMEPLAY
-    let frameSkipCounter = 0;
-    const GAME_TIME = 3 * 60 * 1000; //3 minutes
     const initialTime = useRef<number>(0);
-    const [remainingTime, setRemainingTime] = useState<string>('03:00');
-    const gameStarted = useRef<boolean>(false);
+    const remainingTimeRef = useRef<number>(0);
+    const isGameStarted = useRef<boolean>(false);
+    const poseChangeIntervalRef = useRef<NodeJS.Timeout>();
+
+    const scoreRef = useRef<number>(0);
+
+    //STATE - To render or modify UI
+    const [playerPose, setPlayerPose] = useState<PlayerPose>({
+        className: 'null',
+        probability: 0
+    });
+    const [poseToMatch, setPoseToMatch] = useState<string | null>(null);
+    const [remainingTime, setRemainingTime] = useState<string>(MillisecondsEncoder.toMinutesSeconds(GAME_TIME));
+
+    const [score, setScore] = useState<number>(0);
 
     //Game setup 
     useEffect(() => {
@@ -45,7 +64,13 @@ const MainGame = () => {
 
             const loadedModel = await tmPose.load(modelURL, metaDataURL);
             modelRef.current = loadedModel;
-            maxPredictions.current = loadedModel.getTotalClasses();
+
+            //Set up poses array
+            posesBankRef.current = loadedModel.getClassLabels().filter((label) => label !== 'Idle');
+            incomingPosesRef.current = setInitialIncomingPoses(posesBankRef.current);
+
+            setPoseToMatch(incomingPosesRef.current[0]);
+            poseToMatchRef.current = incomingPosesRef.current[0];
 
             //Set up camera
             const webcam = new tmPose.Webcam(WEBCAM_SPECS.width, WEBCAM_SPECS.height, WEBCAM_SPECS.flip);
@@ -79,12 +104,22 @@ const MainGame = () => {
             await predict();
         }
 
-        console.log('🚀 ~ update ~ gameStarted:', gameStarted);
-
-        if (gameStarted.current) {
+        if (isGameStarted.current) {
             const timeDiff = (timestamp - initialTime.current);
             const timeLeft = GAME_TIME - timeDiff;
+            remainingTimeRef.current = timeLeft;
             setRemainingTime(MillisecondsEncoder.toMinutesSeconds(timeLeft));
+
+            //When player pose matches current pose to match
+            if (playerPoseRef.current.className === poseToMatchRef.current) {
+                scoreRef.current += 1000;
+                setScore((prev) => prev + 1000);
+                onPoseChange(false);
+            }
+
+            if (timeLeft <= 10) {
+                handleGameEnd();
+            }
         }
 
         //#endregion
@@ -95,12 +130,14 @@ const MainGame = () => {
     const predict = async () => {
         if (modelRef.current && webcamRef.current) {
             const { pose, posenetOutput } = await modelRef.current.estimatePose(webcamRef.current.canvas);
-            const predictions = await modelRef.current.predict(posenetOutput);
+            playerPredictionsRef.current = await modelRef.current.predict(posenetOutput);
 
-            if (predictions.length > 0) {
-                const highestPrediction = predictions.filter((p) => p.probability > 0.75)[0];
+            if (playerPredictionsRef.current.length > 0) {
+                const highestPrediction = playerPredictionsRef.current.filter((p) => p.probability > 0.80)[0];
 
-                setCurrentPose(highestPrediction ? highestPrediction.className : '');
+                const predictedPose = highestPrediction ? highestPrediction as PlayerPose : { className: 'null', probability: 0 } as PlayerPose;
+                setPlayerPose(predictedPose);
+                playerPoseRef.current = predictedPose;
             }
 
             drawPose(pose);
@@ -121,19 +158,85 @@ const MainGame = () => {
         }
     };
 
+    const setInitialIncomingPoses = (bank: string[]) => {
+        const randomIndex = [];
+
+        for (let i = 0; i < 3; i++) {
+            const random = Math.floor(Math.random() * bank.length);
+            randomIndex.push(random);
+        }
+
+        return randomIndex.map((index) => bank[index]);
+    };
+
+    const onPoseChange = (awardPoints: boolean) => {
+        //Handle score
+        if (awardPoints) {
+            const poseProbability = playerPredictionsRef.current.filter(
+                (pose) => pose.className === poseToMatchRef.current)[0].probability;
+
+            console.log('🚀 ~ onPoseChange ~ poseProbability:', poseProbability);
+
+            const scoreToAdd = Math.floor(poseProbability * 1000);
+
+            scoreRef.current += scoreToAdd;
+
+            setScore((prev) => prev + scoreToAdd);
+        }
+
+        //Update pose to match
+        onUpdatePose();
+
+        //Interval handler
+        if (poseChangeIntervalRef.current !== null) {
+            clearInterval(poseChangeIntervalRef.current);
+        }
+
+        poseChangeIntervalRef.current = setInterval(() => onPoseChange(true), POSE_CHANGE_TIME);
+    };
+
+    const onUpdatePose = () => {
+        // Update pose to match and incoming poses
+        const newPoseIndex = Math.floor(Math.random() * posesBankRef.current.length);
+        const newPose = posesBankRef.current[newPoseIndex];
+
+        incomingPosesRef.current.push(newPose);
+        incomingPosesRef.current.shift();
+
+        setPoseToMatch(incomingPosesRef.current[0]);
+        poseToMatchRef.current = incomingPosesRef.current[0];
+
+        console.log('New pose to match: ', poseToMatchRef.current,
+            'at', MillisecondsEncoder.toMinutesSeconds(remainingTimeRef.current));
+    };
+
     const handleGameStart = () => {
+        // Set variables to default
         initialTime.current = performance.now();
-        setRemainingTime('03:00');
-        gameStarted.current = true
+        scoreRef.current = 0;
+        setScore(0);
+        setRemainingTime(MillisecondsEncoder.toMinutesSeconds(GAME_TIME));
+        isGameStarted.current = true
+
+        // Start interval for pose change
+        onPoseChange(false);
+    };
+
+    const handleGameEnd = () => {
+        setRemainingTime(MillisecondsEncoder.toMinutesSeconds(0));
+        isGameStarted.current = false;
+        clearInterval(poseChangeIntervalRef.current);
     };
 
     return (
         <>
             <canvas ref={canvasRef} id="canvas"></canvas>
-            <div>Current pose: {currentPose}</div>
+            <div>Player pose: {playerPose.className} {playerPose.probability}</div>
+            <div>Pose to match: {poseToMatch}</div>
             <div>Remaining Time: {remainingTime}</div>
+            <div>Score: {score}</div>
             <button type="button" onClick={handleGameStart}>Start</button>
-            <button type="button" onClick={() => gameStarted.current = false}>Stop</button>
+            <button type="button" onClick={() => isGameStarted.current = false}>Stop</button>
         </>
     );
 };
