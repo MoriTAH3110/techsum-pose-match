@@ -6,7 +6,7 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<MainGame />} />
+        <Route path="/" element={<MainGame />} /> {/* Add ?debug=true for debug mode */}
         <Route path="/predict" element={<BodyPosePredict />} />
       </Routes>
     </Router>

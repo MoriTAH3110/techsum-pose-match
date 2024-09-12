@@ -4,6 +4,8 @@ import * as tmPose from "@teachablemachine/pose";
 import { useEffect, useRef, useState } from "react";
 import { PlayerPose, Pose } from "../../types/TensorFlow.types";
 import { MillisecondsEncoder } from "../../utils/format.utils";
+import { MainGameStyle } from "./MainGame.styles";
+import pose1 from "../../assets/poses/pose1.png"
 
 const WEBCAM_SPECS = {
     width: 640,
@@ -113,7 +115,7 @@ const MainGame = () => {
             //When player pose matches current pose to match
             if (playerPoseRef.current.className === poseToMatchRef.current) {
                 scoreRef.current += 1000;
-                setScore((prev) => prev + 1000);
+                setScore((prev) => prev + 1000); // TODO: factor in the remaining time
                 onPoseChange(false);
             }
 
@@ -228,16 +230,23 @@ const MainGame = () => {
         clearInterval(poseChangeIntervalRef.current);
     };
 
+    const debug = new URLSearchParams(location.search).get('debug')
+
     return (
-        <>
+        <MainGameStyle>
+            <img src={pose1} />
             <canvas ref={canvasRef} id="canvas"></canvas>
-            <div>Player pose: {playerPose.className} {playerPose.probability}</div>
-            <div>Pose to match: {poseToMatch}</div>
+            {debug && (
+                <>
+                    <div>Player pose: {playerPose.className} {playerPose.probability.toFixed(5)}</div>
+                    <div>Pose to match: {poseToMatch}</div>
+                </>
+            )}
             <div>Remaining Time: {remainingTime}</div>
             <div>Score: {score}</div>
             <button type="button" onClick={handleGameStart}>Start</button>
             <button type="button" onClick={() => isGameStarted.current = false}>Stop</button>
-        </>
+        </MainGameStyle>
     );
 };
 
