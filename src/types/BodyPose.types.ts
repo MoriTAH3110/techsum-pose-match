@@ -39,3 +39,17 @@ export interface PoseData {
 }
 
 export type Connection = [number, number];
+
+export type PoseName = 
+  'inTheSkyMessi' |
+  'saluteLinda' |
+  'innerPeaceSalah' |
+  'ironMikeTyson' |
+  'shooterYusuf' |
+  'wednesdayJenna' |
+  'sailorMoon' |
+  'inSightDybala' |
+  'gunsJosuke' |
+  'standJoseph' |
+  'Idle' |
+  ''

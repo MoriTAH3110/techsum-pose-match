@@ -5,7 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { PlayerPose, Pose } from "../../types/TensorFlow.types";
 import { MillisecondsEncoder } from "../../utils/format.utils";
 import { MainGameStyle } from "./MainGame.styles";
-import pose1 from "../../assets/poses/pose1.png"
+import { PoseName } from "../../types/BodyPose.types";
+import { poseDictionary } from "./PoseDictionary";
+
 
 const WEBCAM_SPECS = {
     width: 640,
@@ -28,9 +30,9 @@ const MainGame = () => {
     const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
 
     const modelRef = useRef<tmPose.CustomPoseNet | null>(null);
-    const posesBankRef = useRef<string[]>([]);
-    const incomingPosesRef = useRef<string[]>([]);
-    const poseToMatchRef = useRef<string>('');
+    const posesBankRef = useRef<PoseName[]>([]);
+    const incomingPosesRef = useRef<PoseName[]>([]);
+    const poseToMatchRef = useRef<PoseName>('');
     const playerPoseRef = useRef<PlayerPose>({
         className: 'null',
         probability: 0
@@ -49,7 +51,7 @@ const MainGame = () => {
         className: 'null',
         probability: 0
     });
-    const [poseToMatch, setPoseToMatch] = useState<string | null>(null);
+    const [poseToMatch, setPoseToMatch] = useState<PoseName | null>(null);
     const [remainingTime, setRemainingTime] = useState<string>(MillisecondsEncoder.toMinutesSeconds(GAME_TIME));
 
     const [score, setScore] = useState<number>(0);
@@ -68,8 +70,8 @@ const MainGame = () => {
             modelRef.current = loadedModel;
 
             //Set up poses array
-            posesBankRef.current = loadedModel.getClassLabels().filter((label) => label !== 'Idle');
-            incomingPosesRef.current = setInitialIncomingPoses(posesBankRef.current);
+            posesBankRef.current = (loadedModel.getClassLabels() as PoseName[]).filter((label) => (label) !== 'Idle');
+            incomingPosesRef.current = setInitialIncomingPoses(posesBankRef.current) as PoseName[];
 
             setPoseToMatch(incomingPosesRef.current[0]);
             poseToMatchRef.current = incomingPosesRef.current[0];
@@ -234,7 +236,9 @@ const MainGame = () => {
 
     return (
         <MainGameStyle>
-            <img src={pose1} />
+            {poseToMatch && (
+                <img src={poseDictionary[poseToMatch]} />
+            )}
             <canvas ref={canvasRef} id="canvas"></canvas>
             {debug && (
                 <>
