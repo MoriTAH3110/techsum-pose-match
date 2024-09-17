@@ -9,6 +9,8 @@ export const defaultTheme = {
 		pink: "#EE7BA8",
     purple: "#A26FE3",
 		yellow: "#F2C32E",
-    green: "#65CEA3"
+    green: "#65CEA3",
+		white: "#FFF",
+		black: "#000"
 	}
 };

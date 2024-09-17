@@ -7,6 +7,7 @@ import { MillisecondsEncoder } from "../../utils/format.utils";
 import { MainGameStyle } from "./MainGame.styles";
 import { PoseName } from "../../types/BodyPose.types";
 import { poseDictionary } from "./PoseDictionary";
+import Timer from "../Timer/Timer";
 
 
 const WEBCAM_SPECS = {
@@ -244,12 +245,13 @@ const MainGame = () => {
                 <>
                     <div>Player pose: {playerPose.className} {playerPose.probability.toFixed(5)}</div>
                     <div>Pose to match: {poseToMatch}</div>
+                    <div>Remaining Game Time: {remainingTime}</div>
                 </>
             )}
-            <div>Remaining Time: {remainingTime}</div>
             <div>Score: {score}</div>
             <button type="button" onClick={handleGameStart}>Start</button>
             <button type="button" onClick={() => isGameStarted.current = false}>Stop</button>
+            <Timer progress={remainingTimeRef.current / 600} remainingTime={remainingTime} />
         </MainGameStyle>
     );
 };
