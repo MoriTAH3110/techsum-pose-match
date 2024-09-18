@@ -51,5 +51,6 @@ export type PoseName =
   'inSightDybala' |
   'gunsJosuke' |
   'standJoseph' |
-  'Idle' |
+  'idle' |
+  'empty' |
   ''

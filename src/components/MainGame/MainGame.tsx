@@ -11,8 +11,8 @@ import Timer from "../Timer/Timer";
 
 
 const WEBCAM_SPECS = {
-    width: 640,
-    height: 480,
+    width: 400,
+    height: 400,
     flip: true
 };
 
@@ -71,8 +71,12 @@ const MainGame = () => {
             modelRef.current = loadedModel;
 
             //Set up poses array
-            posesBankRef.current = (loadedModel.getClassLabels() as PoseName[]).filter((label) => (label) !== 'Idle');
+            posesBankRef.current = (loadedModel.getClassLabels() as PoseName[]).filter(
+                (label) => (label) !== 'empty' && label !== 'idle'
+            );
             incomingPosesRef.current = setInitialIncomingPoses(posesBankRef.current) as PoseName[];
+
+            console.log('🚀 ~ init ~ posesBankRef.current:', posesBankRef.current);
 
             setPoseToMatch(incomingPosesRef.current[0]);
             poseToMatchRef.current = incomingPosesRef.current[0];
