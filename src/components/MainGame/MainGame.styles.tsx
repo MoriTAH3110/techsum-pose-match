@@ -12,6 +12,14 @@ const mainGameBaseStyle = css`
     padding-top: 50px;
 `;
 
+const headerBaseStyle = css`
+    & h1 {
+        font-size: 6em;
+        align-self: center;
+        text-transform: uppercase;
+    }
+`
+
 const imageBaseStyle = css`
     & img {
         position: absolute;
@@ -37,8 +45,17 @@ const buttonBaseStyle = css`
     }
 `
 
+const scoreBaseStyle = css`
+    & h2 {
+        align-self: center;
+        font-size: 4em;
+    }
+`
+
 export const MainGameStyle = styled.div`
     ${mainGameBaseStyle}
+    ${headerBaseStyle}
     ${imageBaseStyle}
     ${buttonBaseStyle}
+    ${scoreBaseStyle}
 `;

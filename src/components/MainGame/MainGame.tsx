@@ -6,7 +6,7 @@ import { PlayerPose, Pose } from "../../types/TensorFlow.types";
 import { MillisecondsEncoder } from "../../utils/format.utils";
 import { MainGameStyle } from "./MainGame.styles";
 import { PoseName } from "../../types/BodyPose.types";
-import { poseDictionary } from "./PoseDictionary";
+import { poseImageDictionary, poseNameDictionary } from "./PoseDictionary";
 import Timer from "../Timer/Timer";
 
 
@@ -238,7 +238,10 @@ const MainGame = () => {
     return (
         <MainGameStyle>
             {poseToMatch && (
-                <img src={poseDictionary[poseToMatch]} />
+                <>
+                    <img src={poseImageDictionary[poseToMatch] ?? poseImageDictionary["inTheSkyMessi"]} />
+                    <h1>{poseNameDictionary[poseToMatch] ?? poseNameDictionary["inTheSkyMessi"]}</h1>
+                </>
             )}
             <canvas ref={canvasRef} id="canvas"></canvas>
             {debug && (
@@ -246,11 +249,11 @@ const MainGame = () => {
                     <div>Player pose: {playerPose.className} {playerPose.probability.toFixed(5)}</div>
                     <div>Pose to match: {poseToMatch}</div>
                     <div>Remaining Game Time: {remainingTime}</div>
+                    <button type="button" onClick={handleGameStart}>Start</button>
+                    <button type="button" onClick={() => isGameStarted.current = false}>Stop</button>
                 </>
             )}
-            <div>Score: {score}</div>
-            <button type="button" onClick={handleGameStart}>Start</button>
-            <button type="button" onClick={() => isGameStarted.current = false}>Stop</button>
+            <h2>{score}</h2>
             <Timer progress={remainingTimeRef.current / 600} remainingTime={remainingTime} />
         </MainGameStyle>
     );

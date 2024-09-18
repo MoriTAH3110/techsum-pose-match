@@ -10,7 +10,7 @@ import pose9 from "../../assets/poses/pose9.png"
 import pose10 from "../../assets/poses/pose10.png"
 import { PoseName } from "../../types/BodyPose.types"
 
-export const poseDictionary: { [key in PoseName]: string; } = {
+export const poseImageDictionary: { [key in PoseName]: string; } = {
   "inTheSkyMessi": pose1,
   "saluteLinda": pose2,
   "innerPeaceSalah": pose3,
@@ -24,4 +24,20 @@ export const poseDictionary: { [key in PoseName]: string; } = {
 
   "": pose1,
   "Idle": pose1
+}
+
+export const poseNameDictionary: { [key in PoseName]: string; } = {
+  "inTheSkyMessi": "Messi",
+  "saluteLinda": "Linda",
+  "innerPeaceSalah": "Salah",
+  "ironMikeTyson": "Tyson",
+  "shooterYusuf": "Yusuf",
+  "wednesdayJenna": "Jenna",
+  "sailorMoon": "Sailor Moon",
+  "inSightDybala": "Dybala",
+  "gunsJosuke": "Josuke",
+  "standJoseph": "Joseph",
+
+  "": "",
+  "Idle": ""
 }
