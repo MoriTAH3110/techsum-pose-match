@@ -29,6 +29,12 @@ const imageBaseStyle = css`
     }
 `
 
+const canvasBaseStyle = css`
+& canvas {
+    box-shadow: 10px 10px 0 ${defaultTheme.colors["purple"]};
+}
+`
+
 const buttonBaseStyle = css`
     & button {
         background-color: ${defaultTheme.colors["purple"]};
@@ -56,6 +62,7 @@ export const MainGameStyle = styled.div`
     ${mainGameBaseStyle}
     ${headerBaseStyle}
     ${imageBaseStyle}
+    ${canvasBaseStyle}
     ${buttonBaseStyle}
     ${scoreBaseStyle}
 `;

@@ -6,6 +6,7 @@ const Ready = () => {
 
   return (
     <div onClick={() => navigate("/how")}>
+      <p>tech summit 2024 - tech summit 2024 - tech summit 2024</p>
       Are you ready?
       <button>
         Lets Go!!!!

@@ -23,7 +23,8 @@ export const poseImageDictionary: { [key in PoseName]: string; } = {
   "standJoseph": pose10,
 
   "": pose1,
-  "Idle": pose1
+  "idle": pose1,
+  "empty": pose1
 }
 
 export const poseNameDictionary: { [key in PoseName]: string; } = {
@@ -39,5 +40,6 @@ export const poseNameDictionary: { [key in PoseName]: string; } = {
   "standJoseph": "Joseph",
 
   "": "",
-  "Idle": ""
+  "idle": "",
+  empty: ""
 }

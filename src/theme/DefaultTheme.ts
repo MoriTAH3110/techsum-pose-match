@@ -7,10 +7,11 @@ export const defaultTheme = {
 	},
 	colors: {
 		pink: "#EE7BA8",
-    purple: "#A26FE3",
+    purple: "#6153BD",
 		yellow: "#F2C32E",
     green: "#65CEA3",
 		white: "#FFF",
-		black: "#000"
+		black: "#000",
+		blue: "#3F4467"
 	}
 };
