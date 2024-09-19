@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { poseImageDictionary } from "../MainGame/PoseDictionary"
+import { Heading } from "../Heading/Heading"
 
 const How = () => {
 
@@ -7,7 +8,7 @@ const How = () => {
 
   return (
     <div onClick={() => navigate("/play")}>
-      How?
+      <Heading>How?</Heading>
       <ul>
         <li>Do the poses</li>
         <li>Earn points</li>

@@ -4,9 +4,13 @@ const defaultFontFamily =
 export const defaultTheme = {
 	fonts: {
 		defaultFontFamily: defaultFontFamily,
+		adihausDinBoldItalic: `AdihausDIN-BoldItalic, ${defaultFontFamily}`,
 	},
 	colors: {
 		pink: "#EE7BA8",
+		fuchsia: "#F9458B",
+		fuchsiaBorder: "#B31A56",
+		beige: "#FFADAD",
     purple: "#6153BD",
 		yellow: "#F2C32E",
     green: "#65CEA3",
