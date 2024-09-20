@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { Heading } from "../Heading/Heading"
+import { Button } from "../Button/Button"
 
 const Ready = () => {
 
@@ -9,9 +10,9 @@ const Ready = () => {
     <div onClick={() => navigate("/how")}>
       <p>tech summit 2024 - tech summit 2024 - tech summit 2024</p>
       <Heading>Are <br/> you <br/> ready?</Heading>
-      <button>
+      <Button>
         Lets Go!!!!
-      </button>
+      </Button>
     </div>
   )
 }

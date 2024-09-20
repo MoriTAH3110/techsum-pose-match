@@ -5,6 +5,8 @@ export const defaultTheme = {
 	fonts: {
 		defaultFontFamily: defaultFontFamily,
 		adihausDinBoldItalic: `AdihausDIN-BoldItalic, ${defaultFontFamily}`,
+		adihausDinBold: `AdihausDIN-Bold, ${defaultFontFamily}`,
+		ITCFranklinDmCp: `	ITCFranklinGothicStd-DmCp, ${defaultFontFamily}`
 	},
 	colors: {
 		pink: "#EE7BA8",
