@@ -83,7 +83,9 @@ const MainGame = () => {
 
             //Set up camera
             const webcam = new tmPose.Webcam(WEBCAM_SPECS.width, WEBCAM_SPECS.height, WEBCAM_SPECS.flip);
-            await webcam.setup();
+            const devices = await navigator.mediaDevices.enumerateDevices()
+
+            await webcam.setup({ deviceId: devices[1].deviceId })
             await webcam.play();
             webcamRef.current = webcam;
 

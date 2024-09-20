@@ -12,6 +12,7 @@ export const defaultTheme = {
 		pink: "#EE7BA8",
 		fuchsia: "#F9458B",
 		fuchsiaBorder: "#B31A56",
+		lavender: "#A26FE3",
 		beige: "#FFADAD",
     purple: "#6153BD",
 		yellow: "#F2C32E",

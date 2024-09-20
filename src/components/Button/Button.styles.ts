@@ -4,10 +4,11 @@ import borderImg from "../../assets/patterns/borderImg.svg"
 const DEFAULT_HORIZONTAL_PADDING = 152
 
 export const ButtonStyle = styled.button`
+  white-space: nowrap;
   position: absolute;
   bottom: 0px;
-  right: 0px;
-  transform: translate(-50%, 0%);
+  left: 50%;
+  transform: translate(-45%, 0%);
   border-image-source: url(${borderImg});
   border-image-slice: 5;
   border-width: 12px;

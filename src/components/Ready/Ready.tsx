@@ -1,19 +1,21 @@
 import { useNavigate } from "react-router-dom"
 import { Heading } from "../Heading/Heading"
 import { Button } from "../Button/Button"
+import { Marquee } from "../Marquee/Marquee"
+import { PatternContainer } from "../PatternContainer/PatternContainer.styles"
 
 const Ready = () => {
 
   const navigate = useNavigate()
 
   return (
-    <div onClick={() => navigate("/how")}>
-      <p>tech summit 2024 - tech summit 2024 - tech summit 2024</p>
+    <PatternContainer onClick={() => navigate("/how")}>
+      <Marquee>tech summit 2024 -</Marquee>
       <Heading>Are <br/> you <br/> ready?</Heading>
       <Button>
         Lets Go!!!!
       </Button>
-    </div>
+    </PatternContainer>
   )
 }
 
