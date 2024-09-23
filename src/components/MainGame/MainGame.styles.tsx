@@ -2,23 +2,12 @@ import styled, { css } from "styled-components";
 import { defaultTheme } from "../../theme/DefaultTheme";
 
 const mainGameBaseStyle = css`
-    background-color: ${defaultTheme.colors["pink"]};
     color: ${defaultTheme.colors["purple"]};
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-left: 20%;
-    padding-right: 20%;
-    padding-top: 50px;
+    width: 60vw;
 `;
-
-const headerBaseStyle = css`
-    & h1 {
-        font-size: 6em;
-        align-self: center;
-        text-transform: uppercase;
-    }
-`
 
 const imageBaseStyle = css`
     & img {
@@ -51,6 +40,13 @@ const buttonBaseStyle = css`
     }
 `
 
+const scoreWrapperBaseStyle = css`
+    & .score-wrapper {
+        margin-top: -220px;
+        margin-bottom: 150px;
+    }
+`
+
 const scoreBaseStyle = css`
     & h2 {
         align-self: center;
@@ -60,9 +56,9 @@ const scoreBaseStyle = css`
 
 export const MainGameStyle = styled.div`
     ${mainGameBaseStyle}
-    ${headerBaseStyle}
     ${imageBaseStyle}
     ${canvasBaseStyle}
     ${buttonBaseStyle}
     ${scoreBaseStyle}
+    ${scoreWrapperBaseStyle}
 `;

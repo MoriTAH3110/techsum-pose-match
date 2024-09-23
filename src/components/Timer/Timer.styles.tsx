@@ -13,8 +13,8 @@ const timerBaseStyle = css<ITimerStyle>`
 const chartBaseStyle = css<ITimerStyle>`
     .chart {
         background: ${({ progress }) => `conic-gradient(${defaultTheme.colors["white"]} ${progress}%, ${defaultTheme.colors["purple"]} 0);`}
-        width: 50px;
-        height: 50px;
+        width: 110px;
+        height: 110px;
         border-width: 3px;
         border-color: ${defaultTheme.colors["black"]};
         border-style: solid;
@@ -30,15 +30,16 @@ const cardsBaseStyle = css`
         margin-left: 20px;
         align-items: center;
         & div {
-            width: 33px;
-            height: 33px;
+            width: 66px;
+            height: 66px;
             background-color: ${defaultTheme.colors["white"]};
             border-width: 1px;
             border-color: ${defaultTheme.colors["black"]};
             border-style: solid;
             box-shadow: 5px 5px 0px black;
             color: ${defaultTheme.colors["black"]};
-            line-height: 33px;
+            line-height: 66px;
+            font-size: 40px;
             display: flex;
             justify-content: center;
         }

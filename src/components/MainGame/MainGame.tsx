@@ -8,7 +8,8 @@ import { MainGameStyle } from "./MainGame.styles";
 import { PoseName } from "../../types/BodyPose.types";
 import { poseImageDictionary, poseNameDictionary } from "./PoseDictionary";
 import Timer from "../Timer/Timer";
-
+import { PatternContainer } from "../PatternContainer/PatternContainer.styles";
+import { Heading } from "../Heading/Heading";
 
 const WEBCAM_SPECS = {
     width: 400,
@@ -83,9 +84,7 @@ const MainGame = () => {
 
             //Set up camera
             const webcam = new tmPose.Webcam(WEBCAM_SPECS.width, WEBCAM_SPECS.height, WEBCAM_SPECS.flip);
-            const devices = await navigator.mediaDevices.enumerateDevices()
-
-            await webcam.setup({ deviceId: devices[1].deviceId })
+            await webcam.setup();
             await webcam.play();
             webcamRef.current = webcam;
 
@@ -101,6 +100,7 @@ const MainGame = () => {
         };
 
         init();
+        handleGameStart();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -125,6 +125,8 @@ const MainGame = () => {
             if (playerPoseRef.current.className === poseToMatchRef.current) {
                 scoreRef.current += 1000;
                 setScore((prev) => prev + 1000); // TODO: factor in the remaining time
+                var audio = new Audio('/pickupCoin.wav');
+                audio.play();
                 onPoseChange(false);
             }
 
@@ -242,26 +244,30 @@ const MainGame = () => {
     const debug = new URLSearchParams(location.search).get('debug')
 
     return (
-        <MainGameStyle>
-            {poseToMatch && (
-                <>
-                    <img src={poseImageDictionary[poseToMatch] ?? poseImageDictionary["inTheSkyMessi"]} />
-                    <h1>{poseNameDictionary[poseToMatch] ?? poseNameDictionary["inTheSkyMessi"]}</h1>
-                </>
-            )}
-            <canvas ref={canvasRef} id="canvas"></canvas>
-            {debug && (
-                <>
-                    <div>Player pose: {playerPose.className} {playerPose.probability.toFixed(5)}</div>
-                    <div>Pose to match: {poseToMatch}</div>
-                    <div>Remaining Game Time: {remainingTime}</div>
-                    <button type="button" onClick={handleGameStart}>Start</button>
-                    <button type="button" onClick={() => isGameStarted.current = false}>Stop</button>
-                </>
-            )}
-            <h2>{score}</h2>
-            <Timer progress={remainingTimeRef.current / 600} remainingTime={remainingTime} />
-        </MainGameStyle>
+        <PatternContainer>
+            <MainGameStyle>
+                {poseToMatch && (
+                    <>
+                        <img src={poseImageDictionary[poseToMatch] ?? poseImageDictionary["inTheSkyMessi"]} />
+                        <Heading>{poseNameDictionary[poseToMatch] ?? poseNameDictionary["inTheSkyMessi"]}</Heading>
+                    </>
+                )}
+                <canvas ref={canvasRef} id="canvas"></canvas>
+                <div className="score-wrapper">
+                    <Heading fontSize={150} color="purple">{score} PT</Heading>
+                </div>
+                {debug && (
+                    <>
+                        <div>Player pose: {playerPose.className} {playerPose.probability.toFixed(5)}</div>
+                        <div>Pose to match: {poseToMatch}</div>
+                        <div>Remaining Game Time: {remainingTime}</div>
+                        <button type="button" onClick={handleGameStart}>Start</button>
+                        <button type="button" onClick={() => isGameStarted.current = false}>Stop</button>
+                    </>
+                )}
+                <Timer progress={remainingTimeRef.current / 600} remainingTime={remainingTime} />
+            </MainGameStyle>
+        </PatternContainer>
     );
 };
 

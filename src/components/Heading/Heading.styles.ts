@@ -1,5 +1,10 @@
-import styled, {css, keyframes} from "styled-components";
+import styled, {css, keyframes} from "styled-components"
 import pattern1 from "../../assets/patterns/pattern1.svg"
+
+interface HeadingProps {
+  color?: "pink" | "yellow" | "purple" | "fuchsia";
+  fontSize?: number;
+}
 
 const openAnimation = (position: number) => keyframes`
 0% {
@@ -48,14 +53,14 @@ text-align: center;
 
 `
 
-const BasicTextStyles = css`
+const BasicTextStyles = css<HeadingProps>`
 margin: 0;
 font-family: ${({theme})=> theme.fonts.adihausDinBoldItalic};
-font-size: 220px;
+font-size: ${({ fontSize }) => `${fontSize}px`};
 text-transform: uppercase;
 `
 
-export const HeadingPatternStyle = styled.h1`
+export const HeadingPatternStyle = styled.h1<HeadingProps>`
 ${BasicTextStyles}
 color: transparent;
 -webkit-text-stroke-width: 3px;
@@ -71,9 +76,9 @@ animation-direction: alternate;
 animation-iteration-count: infinite;
 animation-timing-function: ease-in-out;
 `
-export const HeadingStyle = styled.h1`
+export const HeadingStyle = styled.h1<HeadingProps>`
 ${BasicTextStyles}
-color: ${({theme})=> theme.colors.fuchsia};
+color: ${({theme, color})=> color ? theme.colors[color] : theme.colors.fuchsia};
 position: absolute;
 transform: translate(-50%, 0%);
 animation-duration: 2s;
@@ -82,7 +87,7 @@ animation-iteration-count: infinite;
 animation-timing-function: ease-in-out;
 `
 
-export const HeadingShadowsStyle = styled.h1`
+export const HeadingShadowsStyle = styled.h1<HeadingProps>`
 ${BasicTextStyles}
 color: ${({theme})=> theme.colors.beige};
 position: absolute;

@@ -1,11 +1,11 @@
 import { TimerStyle } from "./Timer.styles";
 
-interface ITimerProps {
+interface TimerProps {
 	progress: number;
     remainingTime: string
 }
 
-const Timer = ({progress, remainingTime}: ITimerProps) => {
+const Timer = ({progress, remainingTime}: TimerProps) => {
     return (
         <TimerStyle progress={progress}>
             <div className="chart"></div>

@@ -4,29 +4,31 @@ import { HeadingStyle, HeadingContainer, HeadingShadowsStyle, HeadingPatternStyl
 
 interface HeadingProps {
   children: ReactNode
+  fontSize?: number
+  color?: "pink" | "yellow" | "purple" | "fuchsia"
 }
-export const Heading = ({children}:HeadingProps)=> {
+export const Heading = ({children, fontSize = 220, color = "fuchsia"}:HeadingProps)=> {
   return(
     <HeadingContainer>
-      <HeadingShadowsStyle>
+      <HeadingShadowsStyle fontSize={fontSize} color={color}>
         {children}
       </HeadingShadowsStyle>
-      <HeadingShadowsStyle>
+      <HeadingShadowsStyle fontSize={fontSize} color={color}>
         {children}
       </HeadingShadowsStyle>
-      <HeadingShadowsStyle>
+      <HeadingShadowsStyle fontSize={fontSize} color={color}>
         {children}
       </HeadingShadowsStyle>
-      <HeadingShadowsStyle>
+      <HeadingShadowsStyle fontSize={fontSize} color={color}>
         {children}
       </HeadingShadowsStyle>
-      <HeadingShadowsStyle>
+      <HeadingShadowsStyle fontSize={fontSize} color={color}>
         {children}
       </HeadingShadowsStyle>
-      <HeadingStyle>
+      <HeadingStyle fontSize={fontSize} color={color}>
         {children}
       </HeadingStyle>
-      <HeadingPatternStyle>
+      <HeadingPatternStyle fontSize={fontSize} color={color}>
         {children}
       </HeadingPatternStyle>
     </HeadingContainer>

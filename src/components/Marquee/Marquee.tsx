@@ -3,7 +3,6 @@ import {MarqueeStyle, MarqueeTextStyle} from "./Marquee.styles"
 
 interface MarqueeProps {
   children: string
-  
 }
 
 export const Marquee = ({children}: MarqueeProps)=> {

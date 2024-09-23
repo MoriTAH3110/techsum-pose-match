@@ -19,6 +19,7 @@ export const defaultTheme = {
     green: "#65CEA3",
 		white: "#FFF",
 		black: "#000",
-		blue: "#3F4467"
+		blue: "#3F4467",
+		maroon: "#B31A56"
 	}
 };
