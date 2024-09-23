@@ -4,6 +4,7 @@ import pattern1 from "../../assets/patterns/pattern1.svg"
 interface HeadingProps {
   color?: "pink" | "yellow" | "purple" | "fuchsia";
   fontSize?: number;
+  $wrapText: boolean
 }
 
 const openAnimation = (position: number) => keyframes`
@@ -27,27 +28,31 @@ const openAnimation = (position: number) => keyframes`
 export const HeadingContainer = styled.div`
 position: relative;
 text-align: center;
+& :nth-child(8){
+  animation-name: ${openAnimation(6)};
+}
 & :nth-child(7){
   animation-name: ${openAnimation(6)};
 }
 & :nth-child(6){
-  animation-name: ${openAnimation(6)};
-}
-& :nth-child(5){
   animation-name: ${openAnimation(5)};
 }
-& :nth-child(4){
+& :nth-child(5){
   animation-name: ${openAnimation(4)}
 }
-& :nth-child(3){
+& :nth-child(4){
   animation-name: ${openAnimation(3)}
 }
-& :nth-child(2){
+& :nth-child(3){
   animation-name: ${openAnimation(2)}
 }
-& :nth-child(1){
+& :nth-child(2){
   top: 58px;
   left: calc(50% + 58px);
+  position: absolute;
+}
+& :nth-child(1){
+  opacity: 0;
   position: relative;
 }
 
@@ -75,6 +80,7 @@ animation-duration: 2s;
 animation-direction: alternate;
 animation-iteration-count: infinite;
 animation-timing-function: ease-in-out;
+${({$wrapText})=> $wrapText ? "" : "white-space: nowrap;"}
 `
 export const HeadingStyle = styled.h1<HeadingProps>`
 ${BasicTextStyles}
@@ -85,6 +91,7 @@ animation-duration: 2s;
 animation-direction: alternate;
 animation-iteration-count: infinite;
 animation-timing-function: ease-in-out;
+${({$wrapText})=> $wrapText ? "" : "white-space: nowrap;"}
 `
 
 export const HeadingShadowsStyle = styled.h1<HeadingProps>`
@@ -100,4 +107,5 @@ animation-duration: 2s;
 animation-direction: alternate;
 animation-iteration-count: infinite;
 animation-timing-function: ease-in-out;
+${({$wrapText})=> $wrapText ? "" : "white-space: nowrap;"}
 `

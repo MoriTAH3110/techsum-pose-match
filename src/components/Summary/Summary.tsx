@@ -19,7 +19,7 @@ const Summary = () => {
     <PatternContainer onClick={() => navigate("/")}>
       <Marquee>tech summit 2024 -</Marquee>
       <SummaryStyle>
-        <Heading>TIME IS UP</Heading>
+        <Heading wrapText={false}>TIME IS UP</Heading>
         <div className="score-wrapper">
           <p>YOUR SCORE</p>
           <h3>{score}</h3>
