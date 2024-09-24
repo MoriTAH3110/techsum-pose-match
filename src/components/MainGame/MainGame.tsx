@@ -10,6 +10,7 @@ import { poseImageDictionary, poseNameDictionary } from "./PoseDictionary";
 import Timer from "../Timer/Timer";
 import { PatternContainer } from "../PatternContainer/PatternContainer.styles";
 import { Heading } from "../Heading/Heading";
+import { useNavigate } from "react-router-dom";
 
 const WEBCAM_SPECS = {
     width: 400,
@@ -18,13 +19,17 @@ const WEBCAM_SPECS = {
 };
 
 const MainGame = () => {
+    const navigate = useNavigate();
+
     //URL for the trained model
     const URL = "https://teachablemachine.withgoogle.com/models/ybrnIyoF9/"
 
     //GAMEPLAY
     let frameSkipCounter = 0;
-    const GAME_TIME = 1 * 60 * 1000; //3 minutes
+    const GAME_TIME = 1 * 60 * 1000; //1 minutes
     const POSE_CHANGE_TIME = 15 * 1000; //15 seconds
+    const KEEP_POSE_TIME = 30; // 30 frames
+    let keepPoseTime = KEEP_POSE_TIME;
 
     //REFS - To use value inside async functions
     const webcamRef = useRef<tmPose.Webcam | null>(null);
@@ -54,7 +59,7 @@ const MainGame = () => {
         probability: 0
     });
     const [poseToMatch, setPoseToMatch] = useState<PoseName | null>(null);
-    const [remainingTime, setRemainingTime] = useState<string>(MillisecondsEncoder.toMinutesSeconds(GAME_TIME));
+    const [remainingTime, setRemainingTime] = useState<string>(MillisecondsEncoder.toSecondsTenthsSeconds(GAME_TIME));
 
     const [score, setScore] = useState<number>(0);
 
@@ -99,8 +104,7 @@ const MainGame = () => {
             }
         };
 
-        init();
-        handleGameStart();
+        init().then(() => handleGameStart());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -119,15 +123,22 @@ const MainGame = () => {
             const timeDiff = (timestamp - initialTime.current);
             const timeLeft = GAME_TIME - timeDiff;
             remainingTimeRef.current = timeLeft;
-            setRemainingTime(MillisecondsEncoder.toMinutesSeconds(timeLeft));
+            setRemainingTime(MillisecondsEncoder.toSecondsTenthsSeconds(timeLeft));
 
             //When player pose matches current pose to match
             if (playerPoseRef.current.className === poseToMatchRef.current) {
-                scoreRef.current += 1000;
-                setScore((prev) => prev + 1000); // TODO: factor in the remaining time
-                var audio = new Audio('/pickupCoin.wav');
-                audio.play();
-                onPoseChange(false);
+                keepPoseTime -= 1;
+                console.log('🚀 ~ update ~ keepPoseTime:', keepPoseTime);
+
+                if (keepPoseTime <= 0) {
+                    scoreRef.current += 1000;
+                    setScore((prev) => prev + 1000); // TODO: factor in the remaining time
+                    const audio = new Audio('/pickupCoin.wav');
+                    audio.play();
+                    onPoseChange(false);
+                }
+            } else {
+                keepPoseTime = KEEP_POSE_TIME;
             }
 
             if (timeLeft <= 10) {
@@ -220,7 +231,7 @@ const MainGame = () => {
         poseToMatchRef.current = incomingPosesRef.current[0];
 
         console.log('New pose to match: ', poseToMatchRef.current,
-            'at', MillisecondsEncoder.toMinutesSeconds(remainingTimeRef.current));
+            'at', MillisecondsEncoder.toSecondsTenthsSeconds(remainingTimeRef.current));
     };
 
     const handleGameStart = () => {
@@ -228,17 +239,18 @@ const MainGame = () => {
         initialTime.current = performance.now();
         scoreRef.current = 0;
         setScore(0);
-        setRemainingTime(MillisecondsEncoder.toMinutesSeconds(GAME_TIME));
-        isGameStarted.current = true
+        setRemainingTime(MillisecondsEncoder.toSecondsTenthsSeconds(GAME_TIME));
+        isGameStarted.current = true;
 
         // Start interval for pose change
         onPoseChange(false);
     };
 
     const handleGameEnd = () => {
-        setRemainingTime(MillisecondsEncoder.toMinutesSeconds(0));
+        setRemainingTime(MillisecondsEncoder.toSecondsTenthsSeconds(0));
         isGameStarted.current = false;
         clearInterval(poseChangeIntervalRef.current);
+        navigate('/summary?score=' + scoreRef.current);
     };
 
     const debug = new URLSearchParams(location.search).get('debug')

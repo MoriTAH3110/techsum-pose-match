@@ -11,4 +11,17 @@ export class MillisecondsEncoder {
     
         return `${formattedMinutes}:${formattedSeconds}`;
     };
+
+    // Convert milliseconds to seconds and tenths of seconds in format ss,ts
+    static toSecondsTenthsSeconds = (milliseconds: number): string => {
+        const total = milliseconds / 10;
+
+        const seconds = Math.floor(total / 100);
+        const formattedSeconds = String(seconds).padStart(2, '0');
+
+        const hundredths = Math.round(total % 100);
+        const formattedHundredths = String(hundredths).padStart(2, '0');
+
+        return `${formattedSeconds},${formattedHundredths}`;
+    };
 };
