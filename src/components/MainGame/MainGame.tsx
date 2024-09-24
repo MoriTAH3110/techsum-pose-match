@@ -30,6 +30,7 @@ const MainGame = () => {
     const POSE_CHANGE_TIME = 15 * 1000; //15 seconds
     const KEEP_POSE_TIME = 30; // 30 frames
     let keepPoseTime = KEEP_POSE_TIME;
+    const GOAL_POSE_PROBABILITY = 0.85;
 
     //REFS - To use value inside async functions
     const webcamRef = useRef<tmPose.Webcam | null>(null);
@@ -157,7 +158,7 @@ const MainGame = () => {
             playerPredictionsRef.current = await modelRef.current.predict(posenetOutput);
 
             if (playerPredictionsRef.current.length > 0) {
-                const highestPrediction = playerPredictionsRef.current.filter((p) => p.probability > 0.80)[0];
+                const highestPrediction = playerPredictionsRef.current.filter((p) => p.probability > GOAL_POSE_PROBABILITY)[0];
 
                 const predictedPose = highestPrediction ? highestPrediction as PlayerPose : { className: 'null', probability: 0 } as PlayerPose;
                 setPlayerPose(predictedPose);
