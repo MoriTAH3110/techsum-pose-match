@@ -18,20 +18,24 @@ const scoreBaseStyle = css`
       height: 770px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
       color: ${defaultTheme.colors.maroon};
+      padding-left: 35px;
+      padding-top: 240px;
+      transform: rotate(8.59deg);
 
       & p {
         margin: 0;
         padding: 0;
         font-size: 50px;
+        font-weight: 800
       }
       & h3 {
         margin: 0;
         padding: 0;
-        font-size: 200px;
+        font-size: 135px;
         line-height: 135px;
+        font-weight: 900;
       }
     }
 `;
