@@ -8,6 +8,9 @@ const summaryBaseStyle = css`
     flex-direction: column;
     position: absolute;
     top: 350px;
+    @media (orientation: landscape) {
+      top: 100px;
+    }
 `;
 
 const scoreBaseStyle = css`
@@ -46,8 +49,11 @@ export const SummaryStyle = styled.div`
 `;
 
 export const TaiBaseStyle = styled.img`
-  height: 1500px;
+  height: 50vh;
   position: fixed;
   bottom: 0;
   right: 0;
+  @media (orientation: landscape) {
+    height: 80vh;
+  }
 `

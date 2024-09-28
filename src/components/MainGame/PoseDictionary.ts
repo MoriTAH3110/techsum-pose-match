@@ -34,7 +34,7 @@ export const poseNameDictionary: { [key in PoseName]: string; } = {
   "ironMikeTyson": "Tyson",
   "shooterYusuf": "Yusuf",
   "wednesdayJenna": "Jenna",
-  "sailorMoon": "Sailor Moon",
+  "sailorMoon": "Sailor",
   "inSightDybala": "Dybala",
   "gunsJosuke": "Josuke",
   "standJoseph": "Joseph",
