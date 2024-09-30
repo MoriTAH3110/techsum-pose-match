@@ -4,7 +4,8 @@ import pattern1 from "../../assets/patterns/pattern1.svg"
 interface HeadingProps {
   color?: "pink" | "yellow" | "purple" | "fuchsia";
   fontSize?: number;
-  $wrapText: boolean
+  $wrapText: boolean;
+  units: "px" | "%" | "em" | "rem" ;
 }
 
 const openAnimation = (position: number) => keyframes`
@@ -61,7 +62,7 @@ text-align: center;
 const BasicTextStyles = css<HeadingProps>`
 margin: 0;
 font-family: ${({theme})=> theme.fonts.adihausDinBoldItalic};
-font-size: ${({ fontSize }) => `${fontSize}px`};
+font-size: ${({ fontSize, units }) => `${fontSize}${units}`};
 text-transform: uppercase;
 `
 
