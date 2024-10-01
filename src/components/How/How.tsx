@@ -16,8 +16,8 @@ const How = () => {
         <li><LiText> Earn points</LiText></li>
         <li><LiText> Be fast, the clock <br/> is ticking...</LiText></li>
       </Ul>
-      <Img $left={-300} src={poseImageDictionary["innerPeaceSalah"]} />
-      <Img $right={-350} src={poseImageDictionary["shooterYusuf"]} />
+      <Img $imgWidth={600} $left={-150} $top={860} src={poseImageDictionary["innerPeaceSalah"]} />
+      <Img $imgWidth={600} $right={-150} $top={860} src={poseImageDictionary["shooterYusuf"]} />
     </PatternContainer>
   )
 }

@@ -20,8 +20,10 @@ export const LiText = styled.div`
   top: -40px;
   left: 20px;
 `
-export const Img = styled.img<{$left?: number, $right?: number}>`
+export const Img = styled.img<{$left?: number, $right?: number, $top?: number, $imgWidth?: number}>`
   position: absolute;
   ${({$left})=> $left ? `left: ${$left}px;` : ""}
   ${({$right})=> $right ? `right: ${$right}px;` : ""}
+  ${({$top})=> $top ? `top: ${$top}px;` : ""}
+  ${({$imgWidth})=> $imgWidth ? `width: ${$imgWidth}px;` : ""}
 `
