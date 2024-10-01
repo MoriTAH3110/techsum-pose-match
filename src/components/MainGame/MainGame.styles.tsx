@@ -17,9 +17,9 @@ const mainGameBaseStyle = css`
 const imageBaseStyle = css`
   & img {
     position: absolute;
-    width: 80%;
+    width: 60%;
     top: -120px;
-    left: -300px;
+    left: -200px;
     @media (orientation: landscape) {
       width: 80%;
       left: -350px;
