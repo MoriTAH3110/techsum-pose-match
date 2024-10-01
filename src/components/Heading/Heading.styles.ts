@@ -1,8 +1,10 @@
 import styled, {css, keyframes} from "styled-components"
 import pattern1 from "../../assets/patterns/pattern1.svg"
+import { ThemeColors } from "../../types/Theme.types";
 
 interface HeadingProps {
-  color?: "pink" | "yellow" | "purple" | "fuchsia";
+  color?: ThemeColors;
+  layerFillColor?: ThemeColors;
   fontSize?: number;
   $wrapText: boolean;
   units: "px" | "%" | "em" | "rem" ;
@@ -97,7 +99,7 @@ ${({$wrapText})=> $wrapText ? "" : "white-space: nowrap;"}
 
 export const HeadingShadowsStyle = styled.h1<HeadingProps>`
 ${BasicTextStyles}
-color: ${({theme})=> theme.colors.beige};
+color: ${({theme, layerFillColor})=> layerFillColor ? theme.colors[layerFillColor] : theme.colors.beige};
 position: absolute;
 top: 0;
 left: 50%;

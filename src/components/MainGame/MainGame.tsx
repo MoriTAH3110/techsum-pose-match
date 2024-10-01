@@ -25,7 +25,7 @@ const MainGame = () => {
   const navigate = useNavigate();
 
   //URL for the trained model
-  const URL = "https://teachablemachine.withgoogle.com/models/ybrnIyoF9/"
+  const URL = "https://teachablemachine.withgoogle.com/models/OG_2X86AU/"
 
   //GAMEPLAY
   let frameSkipCounter = 0;
@@ -93,7 +93,8 @@ const MainGame = () => {
 
       //Set up camera
       const webcam = new tmPose.Webcam(WEBCAM_SPECS.width, WEBCAM_SPECS.height, WEBCAM_SPECS.flip);
-      await webcam.setup();
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      await webcam.setup({ deviceId: devices.filter((device) => device.label.includes("C920"))[0].deviceId });
       await webcam.play();
       webcamRef.current = webcam;
 
