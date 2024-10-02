@@ -40,6 +40,7 @@ const ScoreRanking = () => {
             headers: {
                 "ngrok-skip-browser-warning": "true",
                 "Access-Control-Allow-Origin": 'https://kind-hermit-freely.ngrok-free.app',
+
             },
             mode: "cors",
         })
@@ -60,6 +61,10 @@ const ScoreRanking = () => {
                 setRanking(ranking);
             });
     }, []);
+
+    setTimeout(() => {
+        window.location.reload();
+    }, 9000);
 
     return (
         <PatterContainerOverride>
